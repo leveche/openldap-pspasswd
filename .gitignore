@@ -1,0 +1,34 @@
+# Please don't add files that are generated in specific subdirectories
+# here. This file should only contain rules for the entire tree, 
+# and entries specific to the top level directory.
+#
+# After changing this file, please run
+#     git ls-files -i --exclude-standard
+# to check that you haven't inadvertently ignored any tracked files.
+
+# General rules
+
+.*
+*.orig
+*.rej
+*.o
+*.a
+*.la
+*.lo
+*.so
+*.sl
+*.so.*
+*.dylib.*
+*.dSYM
+*~
+
+.libs/
+
+!.gitignore
+!.cvsignore
+!.splintrc
+
+# Top level files
+krb5_pw_validate
+module
+pspasswd

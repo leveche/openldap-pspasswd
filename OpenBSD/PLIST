@@ -1,0 +1,7 @@
+@owner root
+@group bin
+libexec/openldap/
+libexec/openldap/pw-kerberos.so
+libexec/openldap/pw-pskrb5.so
+libexec/openldap/pw-pssblf.so
+sbin/pspasswd

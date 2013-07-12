@@ -1,0 +1,19 @@
+OpenLDAP Kerberos 5 and personal secondary password support
+
+This package provides support for a couple of features used in
+OpenLDAP via that program dynamic load mechanism:
+
+1) Kerberos 5 password validation when authenticating via bind.
+   This is done by a provided dynamically loadable OpenLDAP
+   authentication module.
+
+2) Personal secondary passwords.
+   In the event that user passwords are validated via Kerberos 5
+   when authenticating via bind, this feature allows individual
+   users to set an alternate password to be used instead. This
+   feature is provided via a couple of dynamically loadable
+   OpenLDAP authentication modules along with a program to set
+   the alternate password hash. 
+
+Both of these features require that modules support is available
+in OpenLDAP (via the '--enable-modules' option during build).
