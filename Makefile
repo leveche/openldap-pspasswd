@@ -7,10 +7,10 @@ REVISION=       0
 
 MODULES=	kerberos.so pskrb5.so pssblf.so
 
-CFLAGS=		-g -I/usr/include/kerberosV -I/usr/local/include
-LIBS=		-L/usr/local/lib -R/usr/local/lib -lldap -llber
+CFLAGS=		-g -I/usr/include
+LIBS=		-L/usr/lib -lldap -llber -lssl -lcrypto -ldl -L/usr/lib/x86_64-linux-gnu -Wl,-Bsymbolic-functions -Wl,-z,relro -lkrb5 -lk5crypto -lcom_err
 
-LIBTOOL=	/usr/local/bin/libtool
+#LIBTOOL=	/usr/bin/libtool
 LIBTOOL=	./libtool
 
 PREFIX=		/usr/local
@@ -18,25 +18,25 @@ BINDIR=		${DESTDIR}${PREFIX}/sbin
 LIBDIR=		${DESTDIR}${PREFIX}/lib
 LIBEXEC=	${DESTDIR}${PREFIX}/libexec
 
+#MODULEFLAGS=	-static
 MODULEFLAGS=	-shared
-#MODULEFLAGS=	-Bshareable
 
 SERVER=		"\"ldap://142.244.33.23:389\""
 SERVER=		"\"ldap://ldap1.srv.ualberta.ca\""
 
 all:	${PROGRAMS} ${MODULES}
 
-pspasswd:	$@.c krb5_pw_validate.c
-	cc -o $@ $@.c -DSERVER=${SERVER} -DNOVERIFY ${CFLAGS} ${LIBS}
+pspasswd: %: %.c krb5_pw_validate.c bcrypt.c
+	cc -o $@ bcrypt.c base64.c blf.c $@.c -DSERVER=${SERVER} -DNOVERIFY ${CFLAGS} ${LIBS}
 
-module:		module.c libmodule.so
-	cc -g -o module module.c -I/usr/local/include -L. -R. -lmodule ${LIBS}
+module: module.c libmodule.so
+	cc -g -o module module.c -I/usr/local/include -L.  -lmodule ${LIBS}
 
-libmodule.so:	libmodule.lo
+libmodule.so: libmodule.lo
 	${LIBTOOL} --mode=link ${CC} ${CFLAGS} ${MODULEFLAGS} -o $@ libmodule.lo \
 		-module
 
-krb5_pw_validate : $@.c
+krb5_pw_validate: krb5_pw_validate.c
 	cc -o $@ $@.c -DMAIN ${CFLAGS} -lkrb5 -lcrypto -lcom_err
 
 pskrb5.so:	krb5_pw_validate.c
@@ -76,4 +76,4 @@ tar:	clean
 	${LIBTOOL} --tag=disable-static --mode=compile ${CC} ${CFLAGS} -c $<
 
 .lo.so:
-	${LIBTOOL} --mode=link ${CC} ${CFLAGS} ${MODULEFLAGS} -o $@ $< -module
+	${LIBTOOL} --mode=link ${CC} ${CFLAGS} ${LIBS} ${MODULEFLAGS} -o $@ $< -module
